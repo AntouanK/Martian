@@ -1,6 +1,7 @@
 
-var React     = require('react'),
-    Grid      = require('./components/Grid.jsx'),
+var React         = require('react'),
+    Grid          = require('./components/Grid.jsx'),
+    InputControls = require('./components/InputControls.jsx'),
     targetEle;
 
 
@@ -8,9 +9,11 @@ var React     = require('react'),
 targetEle = document.querySelector('#martian-app');
 
 
+//  bootstrap on the  target element
 React.render(
-  <Grid />,
+  <div>
+    <InputControls />
+    <Grid rows={5} columns={7} />
+  </div>,
   targetEle
 );
-
-console.log(React);
