@@ -1,0 +1,24 @@
+{
+  "name": "martian",
+  "version": "1.0.0",
+  "description": "Cruising on Mars",
+  "main": "index.js",
+  "scripts": {
+    "make-space": "rm -rf static && mkdir static",
+    "copy-html": "cp client/index.html static/",
+    "build-css": "catw -c 'lessc -' 'client/style/*.less' > static/bundle.css",
+    "build-js": "browserify -t reactify client/script/bootstrap.jsx > static/bundle.js",
+    "build": "npm run make-space && npm run copy-html && npm run build-css && npm run build-js"
+  },
+  "author": "Antonis Karamitros @antouank",
+  "license": "ISC",
+  "dependencies": {
+    "browserify": "^8.1.1",
+    "catw": "^0.2.0",
+    "compression": "^1.3.0",
+    "express": "^4.11.1",
+    "less": "^2.3.1",
+    "react": "^0.12.2",
+    "reactify": "^1.0.0"
+  }
+}
