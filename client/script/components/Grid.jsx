@@ -20,17 +20,10 @@ Grid = React.createClass({
       }
     },
 
-    // componentWillMount () {},
-    // componentWillReceiveProps() {},
-    // componentWillUnmount () {},
-
-    // _parseData () {},
-    // _onSelect () {},
-
     _createTile(x, y){
 
       return (
-        <GridTile x={x} y={y} />
+        <GridTile x={x} y={y} key={'tile-'+x+'-'+y} />
       );
     },
 
@@ -50,7 +43,7 @@ Grid = React.createClass({
       }
 
       return (
-        <div className="grid-row">
+        <div className="grid-row" key={'row-'+yOfRow}>
           {tiles}
         </div>
       );

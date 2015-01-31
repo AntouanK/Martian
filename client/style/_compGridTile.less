@@ -2,7 +2,8 @@
 .comp-grid-tile {
 
   position: relative;
-  background-color: white;
+  .separate-layer();
+  .paper-like();
   flex: 1;
 
   margin: 10px;
@@ -11,6 +12,16 @@
     position: absolute;
     bottom: 2px;
     left: 2px;
-    opacity: 0.3;
+    opacity: 0.15;
+    font-weight: 300;
+    font-size: 11px;
+
+    transition: opacity 0.3s;
+  }
+
+  &:hover {
+    .coordinates-info {
+      opacity: 0.4;
+    }
   }
 }
