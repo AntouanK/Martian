@@ -135,7 +135,12 @@ isOutOfBounds = (x, y) => {
   var width = GRID_SIZE[0],
       height = GRID_SIZE[1];
 
-  return (x >= width) || (y >= height);
+  return (
+    (x >= width) ||
+    (x < 0) ||
+    (y >= height) ||
+    (y < 0)
+  );
 };
 
 
@@ -180,9 +185,13 @@ GridStore = assign({}, EventEmitter.prototype, {
       //  cache the state-command before we move
       recordLastStateCommand(state, command);
 
+      console.log('current state', state);
+      console.log('current command', command);
+
       //  check if it's a death move
       if( amIGoingToDie(state, command) ){
         console.log('that was close');
+        console.log('----------------');
         return false;
       }
 
@@ -201,6 +210,9 @@ GridStore = assign({}, EventEmitter.prototype, {
           break;
       }
 
+      console.log('after command', state);
+      console.log('----------------');
+
       if(isOutOfBounds(state.x, state.y)){
 
         //  get the last state before we moved
@@ -208,6 +220,8 @@ GridStore = assign({}, EventEmitter.prototype, {
         //  and save it in the "death" commands
         COMMANDS_BEFORE_DEATH[lastStateCommand] = true;
 
+        console.log('----------------');
+        console.log('----------------');
         GRID_STATE.outcome = 'LOST';
         //  exit
         return true;
