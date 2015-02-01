@@ -63,7 +63,7 @@ InputControls = React.createClass({
 
     var commands = event.target.value;
 
-    if(commands.match(/^[FRLfrl]+$/) === null){
+    if(commands.match(/^[FRLfrl]+$/) === null || commands.length > 100){
       this.setState({
         commands: undefined
       });
@@ -152,7 +152,7 @@ InputControls = React.createClass({
         <div className="commands-form">
 
           <label>
-            Commands
+            Commands ( max 100 )
           </label>
 
           <input

@@ -6,7 +6,7 @@ var MartianAppDispatcher  = require('../dispatcher/MartianAppDispatcher'),
     assign                = require('object-assign'),
     CHANGE_EVENT          = 'change',
     GridStore,
-    GRID_SIZE             = [0,0],
+    GRID_SIZE             = { width: 0, height: 0},
     GRID_STATE,
     LAST_COMMAND,
     COMMANDS_BEFORE_DEATH = {},
@@ -132,10 +132,15 @@ amIGoingToDie = (state, command) => {
 //  check if that point is out of the grid
 isOutOfBounds = (x, y) => {
 
-  var width = GRID_SIZE[0],
-      height = GRID_SIZE[1];
+  var width = GRID_SIZE.width,
+      height = GRID_SIZE.height;
 
-  return (x >= width) || (y >= height);
+  return (
+    (x >= width) ||
+    (x < 0) ||
+    (y >= height) ||
+    (y < 0)
+  );
 };
 
 
@@ -146,8 +151,11 @@ GridStore = assign({}, EventEmitter.prototype, {
     return GRID_SIZE;
   },
 
-  setGridSize(rows, columns){
-    GRID_SIZE = [rows, columns];
+  setGridSize(size){
+    GRID_SIZE = {
+      height: size.height,
+      width: size.width
+    };
   },
 
   simulate(initialState, commands){
@@ -180,9 +188,13 @@ GridStore = assign({}, EventEmitter.prototype, {
       //  cache the state-command before we move
       recordLastStateCommand(state, command);
 
+      console.log('current state', state);
+      console.log('current command', command);
+
       //  check if it's a death move
       if( amIGoingToDie(state, command) ){
         console.log('that was close');
+        console.log('----------------');
         return false;
       }
 
@@ -201,6 +213,9 @@ GridStore = assign({}, EventEmitter.prototype, {
           break;
       }
 
+      console.log('after command', state);
+      console.log('----------------');
+
       if(isOutOfBounds(state.x, state.y)){
 
         //  get the last state before we moved
@@ -208,26 +223,26 @@ GridStore = assign({}, EventEmitter.prototype, {
         //  and save it in the "death" commands
         COMMANDS_BEFORE_DEATH[lastStateCommand] = true;
 
-        GRID_STATE.outcome = 'LOST';
+        GRID_STATE.outcome = 'LOST ['+state.x+','+state.y+' '+state.orientation+']';
         //  exit
         return true;
       }
-      else {
-        GRID_STATE[state.x+'-'+state.y] = {
-          text: 'step '+stepNumber,
-          passed: true
-        };
-      }
+
+      //  set the state of that grid position
+      GRID_STATE[state.x+'-'+state.y] = {
+        text: 'step '+stepNumber,
+        passed: true,
+        orientation: state.orientation
+      };
 
       if(stepNumber === commands.length-1){
-        GRID_STATE.outcome = 'DONE';
+        GRID_STATE.outcome = 'DONE ['+state.x+','+state.y+' '+state.orientation+']';
         GRID_STATE[state.x+'-'+state.y].finish = true;
       }
 
       return false;
     });
 
-    console.log(initialState, commands);
   },
 
   getStateFor(x, y){

@@ -19,7 +19,7 @@ GridStore.addChangeListener(function(){
   React.render(
     <div>
       <InputControls />
-      <Grid rows={gridSize[0]} columns={gridSize[1]} />
+      <Grid rows={gridSize.height} columns={gridSize.width} />
     </div>,
     targetEle
   );
