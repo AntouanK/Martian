@@ -54,7 +54,7 @@ InputControls = React.createClass({
       });
     } else {
       this.setState({
-        initialOrientation: orientation
+        initialOrientation: orientation.toUpperCase()
       });
     }
   },
@@ -69,7 +69,7 @@ InputControls = React.createClass({
       });
     } else {
       this.setState({
-        commands: commands
+        commands: commands.toUpperCase()
       });
     }
   },
@@ -107,22 +107,28 @@ InputControls = React.createClass({
 
     if(self.state.initialRow > -1){
       initialStateLabels.row = self.state.initialRow;
+    } else {
+      initialStateLabels.row = 'Row';
     }
 
     if(self.state.initialColumn > -1){
       initialStateLabels.column = self.state.initialColumn;
+    } else {
+      initialStateLabels.column = 'Column';
     }
 
     if(self.state.initialOrientation){
       initialStateLabels.orientation = self.state.initialOrientation;
+    } else {
+      initialStateLabels.orientation = 'Orientation';
     }
 
     return (
       <div className="comp-input-controls">
-        <form className="initial-state-form">
+        <div className="initial-state-form">
 
           <label>
-            Initial Position ( { initialStateLabels.row || 'Row'}, { initialStateLabels.column || 'Column'}, { initialStateLabels.orientation || 'Orientation'} )
+            Initial Position ( { initialStateLabels.row }, { initialStateLabels.column }, { initialStateLabels.orientation } )
           </label>
 
           <input
@@ -142,8 +148,8 @@ InputControls = React.createClass({
             type="text"
             id="input-initial-orientation"
             onChange={self._setOrientation} required />
-        </form>
-        <form className="commands-form">
+        </div>
+        <div className="commands-form">
 
           <label>
             Commands
@@ -153,7 +159,7 @@ InputControls = React.createClass({
             type="text"
             id="input-commands"
             onChange={self._setCommands} required />
-        </form>
+        </div>
 
         <button
           type="button"

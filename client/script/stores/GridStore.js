@@ -1,94 +1,106 @@
 
 'use strict';
 
-var MartianAppDispatcher = require('../dispatcher/MartianAppDispatcher'),
-    EventEmitter    = require('events').EventEmitter,
-    assign          = require('object-assign'),
-    CHANGE_EVENT    = 'change',
+var MartianAppDispatcher  = require('../dispatcher/MartianAppDispatcher'),
+    EventEmitter          = require('events').EventEmitter,
+    assign                = require('object-assign'),
+    CHANGE_EVENT          = 'change',
     GridStore,
-    GRID_SIZE       = [0,0],
+    GRID_SIZE             = [0,0],
     GRID_STATE,
-    move            = {},
-    turn            = {};
+    move                  = {},
+    turn                  = {},
+    setInitialState,
+    resetGridState,
+    isOutOfBounds;
 
 EventEmitter.prototype.setMaxListeners(100);
 
-move.forward = (orientation, x, y) => {
 
-  switch(orientation){
+move.forward = state => {
+
+  switch(state.orientation){
 
     case 'N':
-    case 'n':
-      y += 1;
+      state.y += 1;
       break;
 
     case 'E':
-    case 'e':
-      x += 1;
+      state.x += 1;
       break;
 
     case 'S':
-    case 's':
-      y -= 1;
+      state.y -= 1;
       break;
 
     case 'W':
-    case 'w':
-      x -= 1;
+      state.x -= 1;
       break;
   }
 };
 
-turn.left = orientation => {
+turn.left = state => {
 
-  switch(orientation){
+  switch(state.orientation){
 
     case 'N':
-    case 'n':
-      orientation = 'W';
+      state.orientation = 'W';
       break;
 
     case 'E':
-    case 'e':
-      orientation = 'N';
+      state.orientation = 'N';
       break;
 
     case 'S':
-    case 's':
-      orientation = 'E';
+      state.orientation = 'E';
       break;
 
     case 'W':
-    case 'w':
-      orientation = 'S';
+      state.orientation = 'S';
       break;
   }
 };
 
-turn.right = orientation => {
+turn.right = state => {
 
-  switch(orientation){
+  switch(state.orientation){
 
     case 'N':
-    case 'n':
-      orientation = 'E';
+      state.orientation = 'E';
       break;
 
     case 'E':
-    case 'e':
-      orientation = 'S';
+      state.orientation = 'S';
       break;
 
     case 'S':
-    case 's':
-      orientation = 'W';
+      state.orientation = 'W';
       break;
 
     case 'W':
-    case 'w':
-      orientation = 'N';
+      state.orientation = 'N';
       break;
   }
+};
+
+resetGridState = function(){
+  GRID_STATE = {};
+};
+
+setInitialState = (x, y) => {
+  GRID_STATE[x+'-'+y] = {
+    initialPosition: true,
+    text: 'Start'
+  };
+};
+
+
+isOutOfBounds = (x, y) => {
+
+  var width = GRID_SIZE[0],
+      height = GRID_SIZE[1];
+
+  return (x >= width) || (y >= height);
 };
 
 
@@ -104,7 +116,69 @@ GridStore = assign({}, EventEmitter.prototype, {
   },
 
   simulate(initialState, commands){
+
+    var state = {
+      x: initialState.row,
+      y: initialState.column,
+      orientation: initialState.orientation
+    };
+
+    //  reset the GRID STATE
+    resetGridState();
+
+    //  check if we are already out of bounds
+    if(isOutOfBounds(state.x, state.y)){
+      GRID_STATE.outcome = 'LOST';
+      console.log(GRID_STATE);
+      return true;
+    }
+
+    //  set the initial position
+    setInitialState(state.x, state.y);
+
+    //  split the commands, and execute them
+    commands
+    .split('')
+    .forEach( (letter, stepNumber) => {
+
+      switch(letter){
+
+        case 'R':
+          turn.right(state);
+          break;
+
+        case 'L':
+          turn.left(state);
+          break;
+
+        case 'F':
+          move.forward(state);
+          break;
+      }
+
+      if(isOutOfBounds(state.x, state.y)){
+        GRID_STATE.outcome = 'LOST';
+        console.log(GRID_STATE);
+        return false;
+      }
+      else {
+        GRID_STATE[state.x+'-'+state.y] = {
+          text: 'passed '+stepNumber,
+          passed: true
+        };
+      }
+
+      console.log('o, x, y', state);
+    });
+
     console.log(initialState, commands);
+  },
+
+  getStateFor(x, y){
+
+    var stateOfTarget = GRID_STATE[x+'-'+y];
+
+    return stateOfTarget;
   },
 
   /**
