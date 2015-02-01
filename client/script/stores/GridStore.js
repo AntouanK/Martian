@@ -135,6 +135,9 @@ isOutOfBounds = (x, y) => {
   var width = GRID_SIZE[0],
       height = GRID_SIZE[1];
 
+  console.log('x, y', x, y);
+  console.log('width, height', width, height);
+
   return (
     (x >= width) ||
     (x < 0) ||
@@ -220,28 +223,26 @@ GridStore = assign({}, EventEmitter.prototype, {
         //  and save it in the "death" commands
         COMMANDS_BEFORE_DEATH[lastStateCommand] = true;
 
-        console.log('----------------');
-        console.log('----------------');
-        GRID_STATE.outcome = 'LOST';
+        GRID_STATE.outcome = 'LOST ['+state.x+','+state.y+' '+state.orientation+']';
         //  exit
         return true;
       }
-      else {
-        GRID_STATE[state.x+'-'+state.y] = {
-          text: 'step '+stepNumber,
-          passed: true
-        };
-      }
+
+      //  set the state of that grid position
+      GRID_STATE[state.x+'-'+state.y] = {
+        text: 'step '+stepNumber,
+        passed: true,
+        orientation: state.orientation
+      };
 
       if(stepNumber === commands.length-1){
-        GRID_STATE.outcome = 'DONE';
+        GRID_STATE.outcome = 'DONE ['+state.x+','+state.y+' '+state.orientation+']';
         GRID_STATE[state.x+'-'+state.y].finish = true;
       }
 
       return false;
     });
 
-    console.log(initialState, commands);
   },
 
   getStateFor(x, y){

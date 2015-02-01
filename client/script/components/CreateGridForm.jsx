@@ -46,7 +46,7 @@ CreateGridForm = React.createClass({
 
   _createTheGrid() {
 
-    Actions.setGridSize(this.state.rows, this.state.columns);
+    Actions.setGridSize(this.state.columns, this.state.rows);
   },
 
   render() {
@@ -56,12 +56,12 @@ CreateGridForm = React.createClass({
     return (
       <div className="comp-create-grid-form">
         <div className="input-wrapper">
-          <label htmlFor="input-rows">Rows</label>
-          <input type="number" id="input-rows" onChange={self._setRows} />
-        </div>
-        <div className="input-wrapper">
           <label htmlFor="input-columns">Columns</label>
           <input type="number" id="input-columns" onChange={self._setColumns} />
+        </div>
+        <div className="input-wrapper">
+          <label htmlFor="input-rows">Rows</label>
+          <input type="number" id="input-rows" onChange={self._setRows} />
         </div>
         <button type="button" disabled={!self._canCreateGrid()} onClick={self._createTheGrid}>
           Create the Grid
