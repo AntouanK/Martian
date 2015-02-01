@@ -1,6 +1,7 @@
 
-var React = require('react'),
-    GridStore = require('../stores/GridStore'),
+var React         = require('react'),
+    GridStore     = require('../stores/GridStore'),
+    assign        = require('object-assign'),
     GridTile;
 
 
@@ -15,19 +16,19 @@ GridTile = React.createClass({
       return {
         text: '',
         initialPosition: false,
-        passed: false
+        passed: false,
+        finish: false
       };
     },
 
     _onChange(){
 
-      var tileState = GridStore.getStateFor(this.props.x, this.props.y);
+      var tileState = GridStore.getStateFor(this.props.x, this.props.y),
+          newState;
 
-      if(tileState !== undefined){
-        this.setState(tileState);
-      } else {
-        this.setState( this.getInitialState() );
-      }
+      newState = assign(this.getInitialState(), tileState);
+
+      this.setState( newState );
     },
 
     componentWillMount () {
@@ -44,11 +45,15 @@ GridTile = React.createClass({
           styles = {};
 
       if(self.state.initialPosition === true){
-        styles.backgroundColor = 'green';
+        styles.backgroundColor = '#98d017';
       }
 
       if(self.state.passed === true){
-        styles.backgroundColor = 'yellow';
+        styles.backgroundColor = '#87ba67';
+      }
+
+      if(self.state.finish === true){
+        styles.backgroundColor = '#79a9a8';
       }
 
       return (

@@ -8,13 +8,20 @@ var MartianAppDispatcher  = require('../dispatcher/MartianAppDispatcher'),
     GridStore,
     GRID_SIZE             = [0,0],
     GRID_STATE,
+    LAST_COMMAND,
+    COMMANDS_BEFORE_DEATH = {},
     move                  = {},
     turn                  = {},
     setInitialState,
     resetGridState,
+    recordLastStateCommand,
+    getLastStateCommand,
+    amIGoingToDie,
     isOutOfBounds;
 
+//  let many tiles attach listeners
 EventEmitter.prototype.setMaxListeners(100);
+
 
 
 move.forward = state => {
@@ -83,10 +90,14 @@ turn.right = state => {
   }
 };
 
-resetGridState = function(){
+
+//  reset the state of the whole grid
+resetGridState = () => {
   GRID_STATE = {};
 };
 
+
+//  set the initial point for our robot
 setInitialState = (x, y) => {
   GRID_STATE[x+'-'+y] = {
     initialPosition: true,
@@ -95,6 +106,30 @@ setInitialState = (x, y) => {
 };
 
 
+//  a cache for keeping the last state-command
+recordLastStateCommand = (state, command) => {
+  LAST_COMMAND = state.x+'-'+state.y+'-'+state.orientation+'-'+command;
+};
+
+// getter for the last state-command cache
+getLastStateCommand = () => {
+  return LAST_COMMAND;
+};
+
+
+//  check if the state and the command we have, is a death combination
+amIGoingToDie = (state, command) => {
+
+  var key = state.x+'-'+state.y+'-'+state.orientation+'-'+command;
+  if(COMMANDS_BEFORE_DEATH[key] === true){
+    return true;
+  }
+  else {
+    return false;
+  }
+};
+
+//  check if that point is out of the grid
 isOutOfBounds = (x, y) => {
 
   var width = GRID_SIZE[0],
@@ -136,12 +171,22 @@ GridStore = assign({}, EventEmitter.prototype, {
     //  set the initial position
     setInitialState(state.x, state.y);
 
+    //  ----------------------------------------  execution loop
     //  split the commands, and execute them
     commands
     .split('')
-    .forEach( (letter, stepNumber) => {
+    .some( (command, stepNumber) => {
 
-      switch(letter){
+      //  cache the state-command before we move
+      recordLastStateCommand(state, command);
+
+      //  check if it's a death move
+      if( amIGoingToDie(state, command) ){
+        console.log('that was close');
+        return false;
+      }
+
+      switch(command){
 
         case 'R':
           turn.right(state);
@@ -157,18 +202,29 @@ GridStore = assign({}, EventEmitter.prototype, {
       }
 
       if(isOutOfBounds(state.x, state.y)){
+
+        //  get the last state before we moved
+        let lastStateCommand = getLastStateCommand();
+        //  and save it in the "death" commands
+        COMMANDS_BEFORE_DEATH[lastStateCommand] = true;
+
         GRID_STATE.outcome = 'LOST';
-        console.log(GRID_STATE);
-        return false;
+        //  exit
+        return true;
       }
       else {
         GRID_STATE[state.x+'-'+state.y] = {
-          text: 'passed '+stepNumber,
+          text: 'step '+stepNumber,
           passed: true
         };
       }
 
-      console.log('o, x, y', state);
+      if(stepNumber === commands.length-1){
+        GRID_STATE.outcome = 'DONE';
+        GRID_STATE[state.x+'-'+state.y].finish = true;
+      }
+
+      return false;
     });
 
     console.log(initialState, commands);
@@ -179,6 +235,14 @@ GridStore = assign({}, EventEmitter.prototype, {
     var stateOfTarget = GRID_STATE[x+'-'+y];
 
     return stateOfTarget;
+  },
+
+  getOutcome(){
+    if(GRID_STATE !== undefined){
+      return GRID_STATE.outcome;
+    } else {
+      return 'UNKNOWN';
+    }
   },
 
   /**

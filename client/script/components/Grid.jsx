@@ -1,6 +1,7 @@
 
 var React       = require('react'),
     GridTile    = require('../components/GridTile.jsx'),
+    GridStore   = require('../stores/GridStore'),
     Grid;
 
 
@@ -12,12 +13,32 @@ Grid = React.createClass({
     },
     // mixins : [],
 
-    // getInitialState() {},
+    getInitialState() {
+      return {
+        outcome: 'UNKNOWN YET'
+      };
+    },
+
     getDefaultProps() {
       return {
         rows: 0,
         columns: 0
       }
+    },
+
+    _onChange(){
+
+      this.setState({
+        outcome: GridStore.getOutcome()
+      });
+    },
+
+    componentWillMount () {
+      GridStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount () {
+      GridStore.removeChangeListener(this._onChange);
     },
 
     _createTile(x, y){
@@ -68,9 +89,12 @@ Grid = React.createClass({
 
       return (
         <div className="comp-grid">
+          <div className="outcome-container">
+            Outcome: {this.state.outcome}
+          </div>
           {rowsToRender}
         </div>
-      )
+      );
     }
 
 });
