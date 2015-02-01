@@ -1,0 +1,48 @@
+body {
+  background-color: grey;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+.comp-grid {
+  background-color: #CCC;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  width: 100%;
+  height: calc(100% - 100px);
+}
+.comp-grid .grid-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex: 1;
+  flex-wrap: nowrap;
+}
+.comp-grid-tile {
+  position: relative;
+  transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  background-color: white;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.24);
+  flex: 1;
+  margin: 10px;
+}
+.comp-grid-tile .coordinates-info {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  opacity: 0.15;
+  font-weight: 300;
+  font-size: 11px;
+  transition: opacity 0.3s;
+}
+.comp-grid-tile:hover .coordinates-info {
+  opacity: 0.4;
+}
+.comp-input-controls input {
+  margin: 10px;
+}
+.comp-input-controls input.small {
+  width: 40px;
+}
