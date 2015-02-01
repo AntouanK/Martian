@@ -16,9 +16,11 @@ CreateGridForm = React.createClass({
 
   _setRows(event){
 
-    if(+event.target.value > 0){
+    var numberValue = +event.target.value;
+
+    if(numberValue > 0 && numberValue < 51){
       this.setState({
-        rows: +event.target.value
+        rows: numberValue
       });
     } else {
       this.setState({
@@ -29,9 +31,11 @@ CreateGridForm = React.createClass({
 
   _setColumns(event){
 
-    if(+event.target.value > 0){
+    var numberValue = +event.target.value;
+
+    if(numberValue > 0 && numberValue < 51){
       this.setState({
-        columns: +event.target.value
+        columns: numberValue
       });
     } else {
       this.setState({
@@ -46,7 +50,11 @@ CreateGridForm = React.createClass({
 
   _createTheGrid() {
 
-    Actions.setGridSize(this.state.columns, this.state.rows);
+    Actions
+    .setGridSize({
+      width: this.state.columns,
+      height: this.state.rows
+    });
   },
 
   render() {
@@ -56,11 +64,11 @@ CreateGridForm = React.createClass({
     return (
       <div className="comp-create-grid-form">
         <div className="input-wrapper">
-          <label htmlFor="input-columns">Columns</label>
+          <label htmlFor="input-columns">Columns ( 1 - 50 ) </label>
           <input type="number" id="input-columns" onChange={self._setColumns} />
         </div>
         <div className="input-wrapper">
-          <label htmlFor="input-rows">Rows</label>
+          <label htmlFor="input-rows">Rows ( 1 - 50 ) </label>
           <input type="number" id="input-rows" onChange={self._setRows} />
         </div>
         <button type="button" disabled={!self._canCreateGrid()} onClick={self._createTheGrid}>

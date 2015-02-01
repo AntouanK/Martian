@@ -6,7 +6,7 @@ var MartianAppDispatcher  = require('../dispatcher/MartianAppDispatcher'),
     assign                = require('object-assign'),
     CHANGE_EVENT          = 'change',
     GridStore,
-    GRID_SIZE             = [0,0],
+    GRID_SIZE             = { width: 0, height: 0},
     GRID_STATE,
     LAST_COMMAND,
     COMMANDS_BEFORE_DEATH = {},
@@ -132,11 +132,8 @@ amIGoingToDie = (state, command) => {
 //  check if that point is out of the grid
 isOutOfBounds = (x, y) => {
 
-  var width = GRID_SIZE[0],
-      height = GRID_SIZE[1];
-
-  console.log('x, y', x, y);
-  console.log('width, height', width, height);
+  var width = GRID_SIZE.width,
+      height = GRID_SIZE.height;
 
   return (
     (x >= width) ||
@@ -154,8 +151,11 @@ GridStore = assign({}, EventEmitter.prototype, {
     return GRID_SIZE;
   },
 
-  setGridSize(rows, columns){
-    GRID_SIZE = [rows, columns];
+  setGridSize(size){
+    GRID_SIZE = {
+      height: size.height,
+      width: size.width
+    };
   },
 
   simulate(initialState, commands){
