@@ -1,6 +1,6 @@
 
 var React     = require('react'),
-    Actions   = require('../actions/actions'),
+    Actions   = require('../actions/Actions'),
     InputControls;
 
 
